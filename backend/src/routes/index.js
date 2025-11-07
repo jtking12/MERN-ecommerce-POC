@@ -1,3 +1,5 @@
 import { signUpRoute } from "./signUpRoute";
 
-export const routes = [signUpRoute];
+import { signInRoute } from "./signInRoute";
+
+export const routes = [signUpRoute, signInRoute];

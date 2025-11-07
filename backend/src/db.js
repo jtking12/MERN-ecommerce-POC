@@ -9,7 +9,10 @@ const dbURI = process.env.MONGODB_URI || "";
 //console.log("Database URI:", dbURI);
 
 export const initDB = async () => {
-  if (!dbURI) console.log("Unable to access dbUri");
+  if (!dbURI) console.log("Unable to access dbUri", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 
   client = await MongoClient.connect(dbURI);
 };
