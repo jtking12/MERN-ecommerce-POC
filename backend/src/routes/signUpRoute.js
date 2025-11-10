@@ -1,4 +1,9 @@
 import { getDbConnection } from "../db";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import * as dotenv from "dotenv";
+import { error } from "console";
+
 
 export const signUpRoute = {
   path: "/api/signup",
@@ -7,23 +12,39 @@ export const signUpRoute = {
     //Debug Log
     console.log("Received POST to /api/signup with body:");
 
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(500);
+    const { email, firstName, lastName, location, password } = req.body;
+    if (!email || !password || !firstName || !lastName || !location) return res.status(500);
 
+    const user = await db.collection("users").findOne({ email });
+    if (user) return res.sendStatus(409); // Conflict - User already exists
+
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
     //Debug Log
-    console.log(`Email: ${email}, Password: ${password}`);
+    // console.log(`Email: ${email}, Password: ${password}`);
+    // console.log(`Password: ${password}\nSalt: ${salt}\nHashed Password: ${hashedPassword}`);
 
     const db = getDbConnection("ecommerce");
     const result = await db.collection("users").insertOne({
       email,
-      password,
+      hashedPassword,
     });
 
     if (!result) return res.sendStatus(500);
 
     const { insertedId } = result;
-    console.log(`InsertedID: ${insertedId}`);
+    //console.log(`InsertedID: ${insertedId}`);
 
-    return res.sendStatus(200);
+
+    jwt.sign({uid: insertedId, email}, process.env.JWT_SECRET, {expiresIn: '2d'}, 
+      (err, token) => {
+        if (err) {
+          console.log("Error generating JWT token:\n", err);
+          return res.sendStatus(500).send(err);
+        }
+
+        return res.status(200).json({token});});
   },
 };
