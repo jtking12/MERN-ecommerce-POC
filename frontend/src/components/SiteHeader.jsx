@@ -1,7 +1,10 @@
+import { useContext } from "react";
 import { Column } from "./Column";
 import { Login } from "./Login";
 import { Row } from "./Row";
 import { SignUp } from "./SignUp";
+import { CartContext } from "../context/CartProvider";
+import { ViewCart } from "./ViewCart";
 
 export const SiteHeader = () => {
   return (
@@ -9,7 +12,7 @@ export const SiteHeader = () => {
       <Row>
         <h1>Ecommerce Storefront</h1>
         <Row>
-          <button>🛒</button>
+          <ViewCart />
           <SignUp />
           <Login />
         </Row>

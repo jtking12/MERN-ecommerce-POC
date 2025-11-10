@@ -1,8 +1,12 @@
+import { useContext } from "react";
 import { Column } from "./Column";
 import { Image } from "./Image";
 import { Row } from "./Row";
+import { CartContext } from "../context/CartProvider";
+import { updateItemInCart } from "../utils/cartManagement";
 
 export const ProductCard = ({ product }) => {
+  const [cartItems, setCartItems] = useContext(CartContext);
   const { id, title, alt, imageSource, price, availability } = product;
 
   return (
@@ -24,7 +28,14 @@ export const ProductCard = ({ product }) => {
           <p style={{ color: "red", fontStyle: "italic" }}>Out of Stock</p>
         )}
       </Row>
-      <button disabled={!availability}>Add To Cart 🛒</button>
+      <button
+        disabled={!availability}
+        onClick={() =>
+          setCartItems((pre) => updateItemInCart("add", product, pre))
+        }
+      >
+        Add To Cart 🛒
+      </button>
     </Column>
   );
 };
