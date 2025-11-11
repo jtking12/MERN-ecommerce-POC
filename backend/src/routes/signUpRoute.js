@@ -25,10 +25,10 @@ export const signUpRoute = {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     //Debug Log
-    // console.log(`Email: ${email}, Password: ${password}`);
-    // console.log(
-    //   `Password: ${password}\nSalt: ${salt}\nHashed Password: ${hashedPassword}`
-    // );
+    console.log(`Email: ${email}, Password: ${password}`);
+    console.log(
+      `Password: ${password}\nSalt: ${salt}\nHashed Password: ${hashedPassword}`
+    );
 
     const result = await db.collection("users").insertOne({
       email,
@@ -41,10 +41,10 @@ export const signUpRoute = {
     if (!result) return res.sendStatus(500);
 
     const { insertedId } = result;
-    //console.log(`InsertedID: ${insertedId}`);
+    console.log(`InsertedID: ${insertedId}`);
 
     jwt.sign(
-      { uid: insertedId, email },
+      { uid: insertedId, email, firstName, lastName, location },
       process.env.JWT_SECRET,
       { expiresIn: "2d" },
       (err, token) => {

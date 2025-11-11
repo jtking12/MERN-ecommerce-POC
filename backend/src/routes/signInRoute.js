@@ -3,28 +3,33 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const signInRoute = {
-    path: "/api/sign-in",
-    method: "post",
-    handler: async (req, res)=> {
-        //Debug Log
-        console.log("Received ping on /api/sign-in");
-        
-        const {email, password} = req.body;
-        const db = getDbConnection("ecommerce");
-        const user = await db.collection("users").findOne({email});
+  path: "/api/sign-in",
+  method: "post",
+  handler: async (req, res) => {
+    //Debug Log
+    console.log("Received ping on /api/sign-in");
 
-        if(!user) return res.status(400).json({message: "Unable to sign in"});
+    const { email, password } = req.body;
+    const db = getDbConnection("ecommerce");
+    const user = await db.collection("users").findOne({ email });
 
-        const {hashedPassword, uid} = user;
-        const pwCheck = await bcrypt.compare(password, hashedPassword);
+    if (!user) return res.status(400).json({ message: "Unable to sign in" });
 
-        if(!pwCheck) return res.status(400).json({message: "Unable to sign in"});
+    const { hashedPassword, _id: uid, firstName, lastName, location } = user;
+    const pwCheck = await bcrypt.compare(password, hashedPassword);
 
-        jwt.sign({uid, email}, process.env.JWT_SECRET, {expiresIn: "2d"}, (err, token) => {
-            if(err){
-                return send.status(500);
-            }
-            return res.status(200).json({token});
-        })
-    }
-}
+    if (!pwCheck) return res.status(400).json({ message: "Unable to sign in" });
+
+    jwt.sign(
+      { uid, email, firstName, lastName, location },
+      process.env.JWT_SECRET,
+      { expiresIn: "2d" },
+      (err, token) => {
+        if (err) {
+          return send.status(500);
+        }
+        return res.status(200).json({ token });
+      }
+    );
+  },
+};
