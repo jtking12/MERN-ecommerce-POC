@@ -4,6 +4,7 @@ import { InputField } from "./InputField";
 import axios from "axios";
 import { useContext } from "react";
 import { CurrentUserContext } from "../context/CurrentUserProvider";
+import { GoogleLogin } from "@react-oauth/google";
 
 export const SignUp = () => {
   const [user, token, setToken] = useContext(CurrentUserContext);
@@ -96,6 +97,13 @@ export const SignUp = () => {
       >
         Sign Up
       </button>
+
+      <GoogleLogin
+        onSuccess={(credResponse) => {
+          console.log(credResponse);
+        }}
+        onError={() => console.log("Error logging in")}
+      />
     </Modal>
   );
 };
